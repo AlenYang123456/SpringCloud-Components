@@ -1,0 +1,50 @@
+
+eureka:
+  client:
+    register-with-eureka: true
+    fetch-registry: true
+    service-url:
+      defaultZone: http://localhost:8761/eureka
+spring:
+  application:
+    name: feignconsumer-service
+#springcloud feign 客户端的负载均衡是通过springcloud ribbon来实现的
+#因此可以直接通过配置Ribbon客户端的方式来定义 "服务调用的参数"
+
+
+#全局配置 ribbon.<key>=<value>
+#例如 以下:修改默认的客户端调用的超时时间
+ribbon:
+  ConnectTimeout: 500
+  ReadTimeout: 5000
+
+#指定服务的配置(细粒度的配置):<client>.ribbon.<key>=<value>
+#例如
+HELLO-SERVICE: # 这里的HELLO-SERVICE是配置在@FeignClient注解上名称
+  ribbon:
+    ConnectTimeout: 500
+    ReadTimeout: 5000
+    OkToRetryIOnAllOperations: true
+    MaxAutoRetriesNextServer: 2 # 重试:更换服务实例访问
+    MaxAutoRetries: 1 # 重试:访问服务失败时,会先尝试访问首选的服务实例 一次,失败后才更换实例
+
+# 开启hystrix对feign的全局配置的支持
+feign:
+  hystrix:
+    enabled: false
+#全局配置 hystrix.command.default:
+#例如 以下 配置全局的超时时间
+hystrix:
+  command:
+    default:
+      execution:
+        isolution:
+          thread:
+            timeoutInMilliseconds: 5000
+
+
+
+
+
+
+

@@ -1,0 +1,64 @@
+
+server:
+  port: 8090
+
+eureka:
+  client:
+    service-url:
+      defaultZone: http://localhost:8761/eureka
+
+
+# Zuul提供的默认面向服务的路由方式: 采用默认的配置以后,就会自动创建路由规则
+#     由于大部分的路由配置规则几乎都会采用服务名作为外部请求的前缀:
+# zuul:
+#  routes:
+#    consumer:
+#      path: /hello-service/**
+#      serviceId: hello-service
+# 以下配置可以忽略Zuul默认的路由配置
+# zuul:
+#    ignored-services: *
+
+#请求路由/服务路由的方方式:
+
+#1.传统路由的方式:即配置path与url的映射
+#zuul:
+#  sensitive-headers: # 设置是否屏蔽Cookie等头信息 ,这是全局化配置
+#  routes:
+#    consumer:
+#      path: /hello-service/**
+#      url: http://localhost:8091/hello1,http://localhost:8092/hello2
+
+#2.面向服务的路由方式配置:
+zuul:
+  # sensitive-headers: 默认为true ,表示屏蔽Cookie等头信息
+  #                    设置为空.表示覆盖默认值,但这是全局化配置,不推荐
+  sensitive-headers:
+  routes:
+    consumer:
+      path: /hello-service/**
+      serviceId: hello-service
+      #默认是true true：代理转发时不去掉前缀，false:代理转发时去掉前缀
+      # 例如我访问 localhost:8090/hello-service/hello ,前缀就是 hello-service 如果配置了前缀,那么请求网关时,就要带上前缀,如果去掉前缀,就不用带上前缀
+      strip-prefix: true
+        # 路由名称.sensitiveHeaders: 默认为true ,表示屏蔽Cookie等头信息
+        #                           设置为空.表示覆盖默认值,但这是细粒度的配置推荐
+      sensitiveHeader:
+  ribbon-isolation-strategy: thread # 是否屏蔽Cookie等头信息,这是细粒度的配置
+
+#ribbon:
+#  ReadTimeout: 30000
+#  ConnectTimeout: 10000 # 创建请求连接超时时间 单位ms
+#
+#hystrix:
+#    command:
+#        default:
+#            execution:
+#                isolation:
+#                    thread:
+#                        timeoutInMilliseconds: 80000 # 网关路由转发请求的执行HystrixCommand执行超时时间 单位ms
+
+spring:
+  application:
+    name: zuul-service
+
