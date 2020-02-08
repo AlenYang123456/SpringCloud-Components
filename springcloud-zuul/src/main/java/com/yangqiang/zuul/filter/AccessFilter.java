@@ -4,9 +4,11 @@ import com.netflix.zuul.ZuulFilter;
 import com.netflix.zuul.context.RequestContext;
 import com.netflix.zuul.exception.ZuulException;
 import lombok.extern.slf4j.Slf4j;
+import org.slf4j.MDC;
 import org.springframework.stereotype.Component;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.UUID;
 
 /**
  * @Author: 杨强
@@ -61,23 +63,30 @@ public class AccessFilter extends ZuulFilter {
      */
     @Override
     public Object run() throws ZuulException {
+        String logTrackId = UUID.randomUUID().toString();
+
+        MDC.put("logTrackId", logTrackId);
+
         //获取请求上下文对象
         RequestContext ctx = RequestContext.getCurrentContext();
         HttpServletRequest request = ctx.getRequest();
 
+        //添加请求头
+        ctx.addZuulRequestHeader("logTrackId", logTrackId);
+
         //打印日志
         log.info("send {} request to {}", request.getMethod(),request.getRequestURL().toString());
 
-        String accessToken = request.getParameter("accessToken");
-        if (null==accessToken){
-            log.warn("access token is empty");
-            ctx.setSendZuulResponse(false);
-            ctx.setResponseStatusCode(401);
-            /*可以通过对响应体的内容进行编辑*/
-            ctx.setResponseBody("");
-            return null;
-        }
-        log.info("access token  Ok" );
+//        String accessToken = request.getParameter("accessToken");
+//        if (null==accessToken){
+//            log.warn("access token is empty");
+//            ctx.setSendZuulResponse(false);
+//            ctx.setResponseStatusCode(401);
+//            /*可以通过对响应体的内容进行编辑*/
+//            ctx.setResponseBody("");
+//            return null;
+//        }
+//        log.info("access token  Ok" );
         return null;
     }
 }

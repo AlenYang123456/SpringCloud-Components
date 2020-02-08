@@ -17,7 +17,8 @@ public class HelloController {
     @RequestMapping("/hello")
     public String  sayHello() throws InterruptedException {
         //设置超时时间 模拟网络延迟 来验证熔断机制,熔断默认时间是2000s
-        Thread.sleep(new Random().nextInt(3000));
+//        Thread.sleep(new Random().nextInt(3000));
+        System.out.println("执行了");
         return "hello";
     }
 }
